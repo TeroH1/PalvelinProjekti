@@ -1,0 +1,49 @@
+#!/bin/expect
+set user "root"
+set server [lindex $argv 0]
+set password "123456"
+
+set timeout 5        ;# Timeout for each SSH attempt
+set intervalli 20    ;# Time to wait between retries
+
+while {1} {
+    # Try to establish an SSH connection to the given IP ($server)
+    spawn ssh $user@$server
+    expect {
+        "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!" {
+            # Remove the offending key from root's known_hosts
+            puts "Host key has changed. Removing the offending key from root's known_hosts."
+            exec ssh-keygen -f "/root/.ssh/known_hosts" -R "$server"
+            exp_continue
+        }
+        "Are you sure you want to continue connecting" {
+            # First-time connection prompt
+            send "yes\r"
+            exp_continue
+        }
+        "password:" {
+            # We know the server is reachable, send the password and exit
+            send "$password\r"
+            puts "Yhteys saatavilla osoitteeseen $server."
+            # Close the connection after successful login
+            expect "# "
+            send "exit\r"
+            exit 0  ;# Exit with success when the connection is available
+        }
+        "No route to host" {
+            # If the server is unreachable, wait and try again
+            puts "SSH yhteys ei saatavilla, yritetään uudelleen $intervalli sekunnin kuluttua osoitteeseen $server."
+        }
+        timeout {
+            # Retry after a timeout
+            puts "Yhteyttä ei saatu osoitteeseen $server. Yritetään uudelleen $intervalli sekunnin kuluttua."
+        }
+        "Could not resolve hostname" {
+            puts "Virhe nimipalvelussa osoitteelle $server. Tarkista IP-osoitteen muoto."
+            exit 1
+        }
+    }
+    
+    # Wait for the interval before retrying
+    sleep $intervalli
+}

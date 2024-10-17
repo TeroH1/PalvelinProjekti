@@ -1,0 +1,118 @@
+#!/bin/expect
+set user "root"
+set server [lindex $argv 0]
+set password "123456"
+
+#muuttujat että saadaan PVE:ille numerot ip-osoitteesta
+#HUOM PVE ip-osoite pitää olla 10-99 välillä koska vain 2 numeroa lopusta otetaan huomioon
+set pituus [string length $server]
+set pvenum [string range $server [expr {$pituus - 2}] end]
+set komento "cat /etc/hostname"
+
+if {$argc != 1} {
+    puts "IP-osoite puuttuu: ./sshskripti.expect <konffattavan palvelimen ip-osoite>"
+    exit 1
+}
+
+# Komento2 muuttaa hostnamen eikä tarvi uudelleen käynnistää ->> Ei toimi pitää kuitenkin käynnistää uudelleen
+set komento2 "hostnamectl set-hostname pve$pvenum" 
+
+set komento3 "cat /etc/hosts"
+# g= korvataan kaikki pve2->pve1
+set komento4 "sed -i 's/pvexxx/pve$pvenum/g' /etc/hosts"
+
+# grepataan parempaan muotoon hosts
+set komento5 "cat /etc/hosts | grep pve"
+
+#Haetaan alkuperäinen hostname tietoon
+spawn ssh $user@$server $komento
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    eof {
+        # Tämä osio ajetaan, kun ssh-yhteys on suljettu
+        # Tallennetaan tulosteen muuttujiin
+        set vanhahostname $expect_out(buffer)
+    }
+}
+
+spawn ssh $user@$server $komento2
+expect "password:"
+send "$password\r"
+interact
+
+#Haetaan muutettu hostname tietoon
+spawn ssh $user@$server $komento
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    eof {
+        # osio ajetaan, kun ssh-yhteys on suljettu ja tallennetaan tulosteen muuttujiin
+        set uusihostname $expect_out(buffer)
+    }
+}
+
+send_user "\n\Alkuperäinen hosts tiedosto------------------\n"
+spawn ssh $user@$server $komento3
+expect "password:"
+send "$password\r"
+interact
+
+spawn ssh $user@$server $komento5
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    eof {
+        # osio ajetaan, kun ssh-yhteys on suljettu ja tallennetaan tulosteen muuttujiin
+        set vanhahosts $expect_out(buffer)
+    }
+}
+
+spawn ssh $user@$server $komento4
+expect "password:"
+send "$password\r"
+interact
+
+send_user "\n\Muutettu hosts tiedosto------------------\n"
+spawn ssh $user@$server $komento3
+expect "password:"
+send "$password\r"
+interact
+
+spawn ssh $user@$server $komento5
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    eof {
+        # osio ajetaan, kun ssh-yhteys on suljettu ja tallennetaan tulosteen muuttujiin
+        set uusihosts $expect_out(buffer)
+    }
+}
+
+send_user "\n\n###########################################################################\n"
+send_user "###############################Muutokset###################################\n"
+send_user "###########################################################################\n"
+send_user "\nVanha hostname oli: $vanhahostname \nUusi hostname on: $uusihostname\n"
+send_user "Hosts oli ennen: $vanhahosts\n"
+send_user "Hosts vaihdettiin muotoon: $uusihosts\n"
+
+# Reboot the server after changes
+send_user "\nKäynnistetään palvelin uudelleen...\n"
+spawn ssh $user@$server "reboot"
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    eof {
+        send_user "\nPalvelin on käynnistetty uudelleen.\n"
+    }
+}

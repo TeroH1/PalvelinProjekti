@@ -1,0 +1,1 @@
+Proxmox palvelimen automatisoinnin skriptitiedostot

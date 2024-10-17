@@ -26,7 +26,6 @@ with open(input_file, mode='r', newline='') as file:
     for row in reader:
         nimi = row['Nimi']
         if row['Konfiguroitu'] == 'False':
-            row['Konfiguroitu'] = 'True'
             mac = row['MAC-osoite']
             ip_last_octet = nimi[-2:]
             ip_address = f"192.168.1.{ip_last_octet}"  # Täydellinen IP-osoite
@@ -43,11 +42,6 @@ with open(input_file, mode='r', newline='') as file:
             print(f"{nimi} laite ON JO konfiguroitu")
         rows.append(row)
 
-with open(output_file, mode='w', newline='') as file:
-    fieldnames = ['Nimi', 'MAC-osoite', 'Konfiguroitu']
-    writer = csv.DictWriter(file, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
 
 print(f"CSV-tiedosto '{output_file}' on päivitetty.")
 
@@ -61,13 +55,10 @@ print(f"dhcpd.conf-tiedosto '{dhcp_conf_file}' on päivitetty.")
 subprocess.run(['sudo', 'systemctl', 'restart', 'isc-dhcp-server.service'], check=True)
 print("DHCP-palvelin uudelleenkäynnistetty, käynnistä palvelin")
 
-# Tässä käytetään jo aiemmin käytettyä muuttujaa rows, eli siellä on myös nodet joiden arvo on alkujaankin ollut true
-# Korjaus voi olla ettei vaihdeta aluksi konfiguroinnissa True->False vaan vasta tässäkohti
-# Sillee menis falset kuitenkin läpi, truet ei ja tää kohta voitas muuttaa if row['konfiguroitu'] == False: 
 print("--------------------------------------------")
 print(rows)
 for row in rows:
-    if row['Konfiguroitu'] == 'True':
+    if row['Konfiguroitu'] == 'False':
         ip_last_octet = row['Nimi'][-2:]
         ip_address = f"192.168.1.{ip_last_octet}"
         subprocess.run(['expect', 'sshtarkistus.exp', ip_address], check=True)
@@ -79,3 +70,10 @@ for row in rows:
         print(f"{row['Nimi']} ssh tarkistus suoritettu osoitteella {ip_address} ")
         subprocess.run(['expect', 'clusteri.exp', ip_address], check=True)
         print(f"{row['Nimi']} Clusteri suoritettu osoitteella {ip_address}")
+        row['Konfiguroitu'] = 'True'
+        
+with open(output_file, mode='w', newline='') as file:
+    fieldnames = ['Nimi', 'MAC-osoite', 'Konfiguroitu']
+    writer = csv.DictWriter(file, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)

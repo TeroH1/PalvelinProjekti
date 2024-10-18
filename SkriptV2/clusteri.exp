@@ -6,34 +6,35 @@ set clusterpalvelin "192.168.1.11"
 
 
 set komento "pvecm add $clusterpalvelin"
+set create_cluster_command "pvecm create cluster"
 set komento2 "rm -d /etc/pve"
 
-
-
-#Tää osuus pitää tehdä näin koska jonku takia ssh ja api "ei luota" meidän suoriin komentoihin
 spawn ssh $user@$server
 expect {
-    # Odota salasanaa ja anna se
     "password:" { send "$password\r" }
 }
-
-# Kun SSH-yhteys on muodostettu, suorita komento
 expect "#"
-send "$komento\r"
+if { $server == $clusterpalvelin } {
+    send "$create_cluster_command\r"
+    send "exit"
+    send_user "Clusteri luotu"
+} else {
+    send "$komento\r"
+}
 expect {
-    # Odota salasanaa ja anna se
     "password" { send "$password\r" }
 }
 
+
+
 expect {
-    # Halutaanko jatkaa yhdistämistä
     "yes/no" { 
 		send "yes\r"
 		exp_continue
 		}
     "Check if node may join a cluster failed!" { 
 		send_user "Clusteriin lisääminen epäonnistui, Node todennäköisesti on jo clusterissa\n Lopetetaan ohjelman suoritus\n"
-		exit 1
+		exit 0
 		}
 	"401 authentication failure" { 
 		send_user "Clusteriin lisääminen epäonnistui\n"

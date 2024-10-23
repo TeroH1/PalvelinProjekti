@@ -2,12 +2,26 @@ import csv
 import subprocess
 import time
 import threading
-#Test
+
 
 #Funktio threadingia varten
 #Käytännössä tarkotus on että voi kutsua helposti 
-def scriptinloppu():
-    subprocess.run(['python3', 'scriptinloppuosa.py', ip_address, row['Nimi']])
+def scriptinloppu(ip_address, nimi):
+	subprocess.run(['expect', 'sshtarkistus.exp', ip_address], check=True)
+	print(f"{nimi} ssh tarkistus suoritettu osoitteella {ip_address} ")
+	subprocess.run(['expect', 'konfigurointi.exp', ip_address], check=True)
+	print(f"{nimi} konfigurointi suoritettu osoitteella {ip_address}")
+	time.sleep(20)
+	subprocess.run(['expect', 'sshtarkistus.exp', ip_address], check=True)
+	print(f"{nimi} ssh tarkistus suoritettu osoitteella {ip_address} ")
+	subprocess.run(['expect', 'clusteri.exp', ip_address], check=True)
+	print(f"{nimi} Clusteri.exp suoritettu osoitteella {ip_address}")
+	print("------------------------------------------------------------")
+	for row in rows:
+		if row['Nimi'] == nimi:
+			row['Konfiguroitu'] = 'True'
+	
+
 
 input_file = 'Tiedot.csv'
 output_file = 'Tiedot2.csv'
@@ -60,19 +74,26 @@ print(f"dhcpd.conf-tiedosto '{dhcp_conf_file}' on päivitetty.")
 
 subprocess.run(['sudo', 'systemctl', 'restart', 'isc-dhcp-server.service'], check=True)
 print("DHCP-palvelin uudelleenkäynnistetty, käynnistä palvelin")
-
 print("--------------------------------------------")
-#print(rows)
+
+
+threads = []
 for row in rows:
     if row['Konfiguroitu'] == 'False':
         ip_last_octet = row['Nimi'][-2:]
         ip_address = f"192.168.1.{ip_last_octet}"
-        threading.Thread(target=scriptinloppu).start()
-        
-        
-        
+        nimi = row['Nimi']
+        thread = threading.Thread(target=scriptinloppu, args=(ip_address, nimi,))
+        threads.append(thread) #lisätään listaan jotta voidaan seurata millon kaikki on valmiita
+        thread.start()
+
+#Odotetaan että threadit on valmiita
+for thread in threads:
+	thread.join()
+
 with open(output_file, mode='w', newline='') as file:
     fieldnames = ['Nimi', 'MAC-osoite', 'Konfiguroitu']
     writer = csv.DictWriter(file, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(rows)
+    print(rows) #debug printti

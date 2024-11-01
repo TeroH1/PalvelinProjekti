@@ -32,20 +32,22 @@ def discover_snifferi(packet):
 		for opt in packet[DHCP].options:
 			#Etsitään DHCP Discover -viestejä
 			if opt[0] == 'message-type' and opt[1] == 1:  # 1 = DHCP Discover
-				print(f"DHCP discover macistä: {packet[Ether].src}")
-				macosoite = packet[Ether].src
-				if macosoite in tallennettavat_tiedot.values():
-					print("\nMAC-osoite on jo listassa TESTAUSMOODISSA ELI LAITETAAN SILTI LISTAAN!")
-					print("Ota # merkki pois tässä allaolevalta riviltä jos haluat ettei samoja maceja laiteta listaan")
-					#break
-				laite = input("Anna nimi laitteelle: ")
-				tallennettavat_tiedot.update({laite:macosoite})
-				#laitetaan löydetty MAC csv-tiedostoon
-				writer.writerow([laite, macosoite])
-                
-				break
+				if packet[Ether].src.startswith(vendor):
+					print(f"DHCP discover macistä: {packet[Ether].src}")
+					macosoite = packet[Ether].src
+					if macosoite in tallennettavat_tiedot.values():
+						print("\nMAC-osoite on jo listassa TESTAUSMOODISSA ELI LAITETAAN SILTI LISTAAN!")
+						print("Ota # merkki pois tässä allaolevalta riviltä jos haluat ettei samoja maceja laiteta listaan")
+						#break
+					laite = input("Anna nimi laitteelle: ")
+					tallennettavat_tiedot.update({laite:macosoite})
+					#laitetaan löydetty MAC csv-tiedostoon
+					writer.writerow([laite, macosoite])
+		        
+					break
 
 #Katotaan DHCP paketit porttien perusteella
+vendor = input("Anna MAC-osoitteen vendor osa/muutama numero alusta (tyhjä = kaikki) ")
 sniff(iface="ens33", filter="udp and (port 67 or port 68)", prn=discover_snifferi, store=0)
 
 file.close()

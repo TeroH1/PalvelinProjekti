@@ -37,7 +37,7 @@ def scriptinloppu(ip_address, nimi):
 
 
 input_file = 'Tiedot.csv'
-output_file = 'Tiedot2.csv'
+output_file = 'Tiedot.csv'
 dhcp_conf_file = '/etc/dhcp/dhcpd.conf'
 
 		

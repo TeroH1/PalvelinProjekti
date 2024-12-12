@@ -1,0 +1,32 @@
+#/etc/network/intefaces
+auto eno1
+	iface eno1 inet static
+	address 10.10.1.97/31        
+	mtu 9216
+	#TO_FABRIB_L2A_ETH1
+	
+auto eno2
+	iface eno2 inet static
+	address 10.10.2.97/31
+	mtu 9216
+	#TO_FABRIC_L2B_ETH1
+	
+auto enroute0
+	iface enroute0 inet static
+	address 10.2.1.48/32
+	mtu 9216
+	pre-up ip link add enroute0 type dummy
+
+auto VLAB_SAN
+	iface VLAB_SAN inet manual
+	address 192.168.7.240/24
+	bridge-ports none
+	bridge-stp off
+	bridge-fd 0
+	
+auto vxlan7001
+	iface vxlan7001 inet manual
+	pre-up ip link add vxlan7001 type vxlan id 7001 dstport 4789 local 10.2.1.48 nolearning
+	pre-up ip link set dev vxlan7001 master VLAB_SAN
+	pre-up ip link set up dev vxlan7001
+	post-up ip link set mtu 9000 dev vxlan7001

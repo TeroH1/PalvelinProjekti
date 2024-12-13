@@ -1,0 +1,24 @@
+spawn ssh root@192.168.1.11
+Yhteyttä ei saatu osoitteeseen 192.168.1.11. Yritetään uudelleen 20 sekunnin kuluttua.
+spawn ssh root@192.168.1.11
+ssh: connect to host 192.168.1.11 port 22: No route to host
+SSH yhteys ei saatavilla, yritetään uudelleen 20 sekunnin kuluttua osoitteeseen 192.168.1.11.
+spawn ssh root@192.168.1.11
+ssh: connect to host 192.168.1.11 port 22: No route to host
+SSH yhteys ei saatavilla, yritetään uudelleen 20 sekunnin kuluttua osoitteeseen 192.168.1.11.
+spawn ssh root@192.168.1.11
+ssh: connect to host 192.168.1.11 port 22: No route to host
+SSH yhteys ei saatavilla, yritetään uudelleen 20 sekunnin kuluttua osoitteeseen 192.168.1.11.
+spawn ssh root@192.168.1.11
+root@192.168.1.11's password: Yhteys saatavilla osoitteeseen 192.168.1.11.
+
+Linux pve11 6.8.4-2-pve #1 SMP PREEMPT_DYNAMIC PMX 6.8.4-2 (2024-04-10T17:36Z) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Fri Dec 13 12:44:37 2024 from 192.168.1.1
+[?2004hroot@pve11:~# 

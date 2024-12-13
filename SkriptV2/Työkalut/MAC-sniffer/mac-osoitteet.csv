@@ -1,1 +1,2 @@
-Laite,MAC-osoite
+Nimi,MAC-osoite,Loopback,Link-ip/subnet,Link-naapuri
+pve11,14:18:77:32:42:65,10.2.1.48,97/31,96

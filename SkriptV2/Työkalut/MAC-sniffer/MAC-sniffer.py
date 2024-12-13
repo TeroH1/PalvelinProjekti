@@ -9,14 +9,14 @@ import os
 if not os.path.exists("mac-osoitteet.csv"):
 	with open('mac-osoitteet.csv', mode='w', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Laite", "MAC-osoite","Loopback","Link-ip/subnet", "Link-naapuri"])  
+		writer.writerow(["Nimi", "MAC-osoite","Loopback","Link-ip/subnet", "Link-naapuri"])  
 		
 #laitetaan CSV-tiedostosta tiedot sanakirjaan niin saadaan käytyä läpi jos tulee samoja
 tallennettavat_tiedot = {}	
 with open("mac-osoitteet.csv", mode='r', newline='') as file:
 	reader = csv.DictReader(file)  
 	for row in reader:
-		laite = row['Laite']  
+		laite = row['Nimi']  
 		mac_osoite = row['MAC-osoite']
 		loopback = row['Loopback']
 		linkip = row['Link-ip/subnet']

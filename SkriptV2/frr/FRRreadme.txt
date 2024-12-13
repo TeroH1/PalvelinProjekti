@@ -22,6 +22,22 @@ apt update
 tai 
 apt dist-upgrade
 
+apt install
 Huom. Todennäköisesti FRR:n lataamisen jälkeen tämä kannattaa poistaa. Toinen vaihtoehto on jättää, mutta sitten pitää aina olla management palvelin käytössä.
 
+curl 192.168.1.1/frrconfigfiles/frr-PVE11.conf > /etc/frr/frr.conf
 
+curl 192.168.1.1/interfaceconfigfiles/interface-PVE11.conf >> /etc/network/interfaces
+
+
+
+
+Proxmoxin pitää tehdä (huom nimi muuttuja kahdessa viimesessä):
+6 curl 192.168.1.1/sourceslist.txt >> /etc/apt/sources.list
+7 curl 192.168.1.1/01proxy.txt > /etc/apt/apt.conf.d/01proxy
+8 apt update
+9 apt install frr
+10 curl 192.168.1.1/frrconfigfiles/frr-PVE$pvenum.conf > /etc/frr/frr.conf
+11 curl 192.168.1.1/interfaceconfigfiles/interface-PVE$pvenum.conf >> /etc/network/interfaces
+12 systemctl restart frr.service
+13 systemctl restart networking.service

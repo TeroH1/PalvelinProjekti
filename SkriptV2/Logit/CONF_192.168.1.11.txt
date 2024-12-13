@@ -1,0 +1,70 @@
+spawn ssh root@192.168.1.11 cat /etc/hostname
+root@192.168.1.11's password: 
+pvexxx
+spawn ssh root@192.168.1.11 hostnamectl set-hostname pve11
+root@192.168.1.11's password: 
+spawn ssh root@192.168.1.11 cat /etc/hostname
+root@192.168.1.11's password: 
+pve11
+
+Alkuperäinen hosts tiedosto------------------
+spawn ssh root@192.168.1.11 cat /etc/hosts
+root@192.168.1.11's password: 
+127.0.0.1 localhost.localdomain localhost
+192.168.1.11 pvexxx.testinstall pvexxx
+
+# The following lines are desirable for IPv6 capable hosts
+
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+spawn ssh root@192.168.1.11 cat /etc/hosts | grep pve
+root@192.168.1.11's password: 
+192.168.1.11 pvexxx.testinstall pvexxx
+spawn ssh root@192.168.1.11 sed -i 's/pvexxx/pve11/g' /etc/hosts
+root@192.168.1.11's password: 
+
+Muutettu hosts tiedosto------------------
+spawn ssh root@192.168.1.11 cat /etc/hosts
+root@192.168.1.11's password: 
+127.0.0.1 localhost.localdomain localhost
+192.168.1.11 pve11.testinstall pve11
+
+# The following lines are desirable for IPv6 capable hosts
+
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+spawn ssh root@192.168.1.11 cat /etc/hosts | grep pve
+root@192.168.1.11's password: 
+192.168.1.11 pve11.testinstall pve11
+
+
+###########################################################################
+###############################Muutokset###################################
+###########################################################################
+
+Vanha hostname oli:  
+pvexxx
+ 
+Uusi hostname on:  
+pve11
+
+Hosts oli ennen:  
+192.168.1.11 pvexxx.testinstall pvexxx
+
+Hosts vaihdettiin muotoon:  
+192.168.1.11 pve11.testinstall pve11
+
+
+Käynnistetään palvelin uudelleen...
+spawn ssh root@192.168.1.11 reboot
+root@192.168.1.11's password: 
+
+Palvelin on käynnistetty uudelleen.

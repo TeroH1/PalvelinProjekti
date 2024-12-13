@@ -1,0 +1,19 @@
+spawn ssh root@192.168.1.11
+root@192.168.1.11's password: 
+Linux pve11 6.8.4-2-pve #1 SMP PREEMPT_DYNAMIC PMX 6.8.4-2 (2024-04-10T17:36Z) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Fri Dec 13 12:46:35 2024 from 192.168.1.1
+Clusteri luotupvecm create cluster
+exit[?2004hroot@pve11:~# pvecm create cluster
+[?2004lCorosync Cluster Engine Authentication key generator.
+Gathering 2048 bits for key from /dev/urandom.
+Writing corosync key to /etc/corosync/authkey.
+Writing corosync config to /etc/pve/corosync.conf
+Restart corosync and cluster filesystem
+[?2004hroot@pve11:~# exitAsennus suoritettu

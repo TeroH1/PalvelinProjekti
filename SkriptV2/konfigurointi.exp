@@ -24,6 +24,32 @@ set komento4 "sed -i 's/pvexxx/pve$pvenum/g' /etc/hosts"
 # grepataan parempaan muotoon hosts
 set komento5 "cat /etc/hosts | grep pve"
 
+# Haetaan sources list
+
+set komento6 "curl 192.168.1.1/sourceslist.txt >> /etc/apt/sources.list"
+
+# Asennetaan proxy apt
+set komento7 "curl 192.168.1.1/01proxy.txt > /etc/apt/apt.conf.d/01proxy"
+
+# ajetaan frr konffit
+set komento10 "curl 192.168.1.1/frrconfigfiles/frr-PVE$pvenum.conf > /etc/frr/frr.conf"
+
+# Ajetaan interface konffit
+set komento11 "curl 192.168.1.1/interfaceconfigfiles/interface-PVE$pvenum.conf >> /etc/network/interfaces"
+
+# Päivitetään apt 
+set komento8 "apt update"
+
+# Asennetaan Frr 
+set komento9 "apt install frr"
+
+# Käynnistetään palvelut
+set komento12 "systemctl restart frr.service"
+
+#
+set komento13 "systemctl restart networking.service"
+
+
 #Haetaan alkuperäinen hostname tietoon
 spawn ssh $user@$server $komento
 expect {
@@ -96,6 +122,54 @@ expect {
         set uusihosts $expect_out(buffer)
     }
 }
+
+
+spawn ssh $user@$server $komento6
+expect "password:"
+send "$password\r"
+interact
+
+
+spawn ssh $user@$server $komento7
+expect "password:"
+send "$password\r"
+interact
+
+spawn ssh $user@$server $komento8
+expect "password:"
+send "$password\r"
+interact
+
+
+spawn ssh $user@$server $komento9
+expect "password:"
+send "$password\r"
+expect "Do you want to continue"
+send "Y\r"
+expect "#"
+
+
+spawn ssh $user@$server $komento10
+expect "password:"
+send "$password\r"
+interact
+
+spawn ssh $user@$server $komento11
+expect "password:"
+send "$password\r"
+interact
+
+spawn ssh $user@$server $komento12
+expect "password:"
+send "$password\r"
+interact
+
+spawn ssh $user@$server $komento13
+expect "password:"
+send "$password\r"
+interact
+
+
 
 send_user "\n\n###########################################################################\n"
 send_user "###############################Muutokset###################################\n"

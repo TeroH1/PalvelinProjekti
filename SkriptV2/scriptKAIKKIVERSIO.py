@@ -29,12 +29,112 @@ def scriptinloppu(ip_address, nimi):
 		if row['Nimi'] == nimi:
 			row['Konfiguroitu'] = 'True'
 			with open(output_file, mode='w', newline='') as file:  # Tää on vähän huono ratkau mutta parempaa hakies toimii
-				fieldnames = ['Nimi', 'MAC-osoite', 'Konfiguroitu']
+				fieldnames = ['Nimi', 'MAC-osoite', 'Loopback', 'Link-ip/subnet', 'Link-naapuri', 'Konfiguroitu']
 				writer = csv.DictWriter(file, fieldnames=fieldnames)
 				writer.writeheader() 
 				writer.writerows(rows)  
 				print(rows) # Debug printti
 
+def palvelinkonffit(nimi, loopback, linkip, neighborip):
+	global interfaces_config
+	global frr_config
+	interfaces_config = f"""#/etc/network/intefaces
+auto eno1
+	iface eno1 inet static
+	address 10.10.1.{linkip}        
+	mtu 9216
+	#TO_FABRIB_L2A_ETH1
+	
+auto eno2
+	iface eno2 inet static
+	address 10.10.2.{linkip}
+	mtu 9216
+	#TO_FABRIC_L2B_ETH1
+	
+auto enroute0
+	iface enroute0 inet static
+	address {loopback}/32
+	mtu 9216
+	pre-up ip link add enroute0 type dummy
+
+auto VLAB_SAN
+	iface VLAB_SAN inet manual
+	address 192.168.7.240/24
+	bridge-ports none
+	bridge-stp off
+	bridge-fd 0
+	
+auto vxlan7001
+	iface vxlan7001 inet manual
+	pre-up ip link add vxlan7001 type vxlan id 7001 dstport 4789 local 10.2.1.{loopback} nolearning
+	pre-up ip link set dev vxlan7001 master VLAB_SAN
+	pre-up ip link set up dev vxlan7001
+	post-up ip link set mtu 9000 dev vxlan7001"""
+	
+	frr_config = f"""!
+frr version 8.5.2
+frr defaults datacenter
+hostname test
+log syslog informational
+no ip forwarding
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+router bgp 65002
+bgp router-id {loopback}
+bgp graceful-restart-disable
+neighbor LEAF peer-group
+neighbor LEAF remote-as 65001
+neighbor LEAF capability dynamic
+neighbor 10.10.1.{neighborip} peer-group LEAF
+neighbor 10.10.2.{neighborip} peer-group LEAF
+bgp allow-martian-nexthop
+!
+address-family ipv4 unicast
+  network {loopback}/32
+  neighbor LEAF allowas-in
+  maximum-paths 8
+exit-address-family
+!
+address-family l2vpn evpn
+  neighbor LEAF activate
+  neighbor LEAF allowas-in
+  advertise-all-vni
+  advertise-svi-ip
+  advertise ipv4 unicast
+exit-address-family
+exit
+end"""
+	lista.append(frr_config)
+	lista.append(interfaces_config)
+
+input_file = 'Tiedot.csv'
+output_file = 'Tiedot.csv'
+
+with open(input_file, mode='r', newline='') as file:
+    reader = csv.DictReader(file)
+    rows = []
+    for row in reader:
+        lista = []		
+        nimi = row['Nimi']
+        loopback = row['Loopback']
+        linkip = row['Link-ip/subnet']
+        neighborip = row['Link-naapuri']
+        
+        frrkonfigfile = f'/var/www/html/frrconfigfiles/frr-{nimi}.conf'
+        interfacekonfigfile = f"/var/www/html/interfaceconfigfiles/interface-{nimi}.conf"
+               
+        palvelinkonffit(nimi, loopback, linkip, neighborip)
+        print(lista[0])
+        print(lista[1])
+        
+        with open(frrkonfigfile, mode='w') as file:
+            file.write(frr_config)
+        with open(interfacekonfigfile, mode='w+') as file:
+            file.write(interfaces_config)
+            
+        
+        
 
 input_file = 'Tiedot.csv'
 output_file = 'Tiedot.csv'
@@ -54,6 +154,7 @@ static_config = """subnet 192.168.1.0 netmask 255.255.255.0 {
   option domain-name "local";
 }
 """
+
 
 dhcp_configurations = []
 

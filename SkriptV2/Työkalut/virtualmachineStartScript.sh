@@ -22,7 +22,7 @@ apt install proxmox-auto-install-assistant
 echo 'mode = "http" 
 [http] 
 url = http://192.168.1.1/PVEXXX/answer.toml' > /home/autoinstallerfiles/auto-installer-mode.toml
-echo '[global] 
+echo "[global] 
 keyboard = "fi" 
 country = "at" 
 fqdn = "pvexxx.testinstall" 
@@ -37,6 +37,6 @@ source = "from-dhcp"
 filesystem = "ext4" 
 lvm.swapsize = 0 
 lvm.maxvz = 0 
-disk_list = ['sda']' > /var/www/html/PVEXXX/answer.toml
+disk_list = ['sda']" > /var/www/html/PVEXXX/answer.toml
 apt install gh
 apt install git

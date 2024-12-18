@@ -2,6 +2,7 @@ apt install isc-dhcp-server
 nano /etc/default/isc-dhcp-server
 apt install tftp-server
 mkdir /srv/tftp/PVEXXX
+systemctl start tftpd-hpa.service
 apt install pxelinux
 cp /usr/lib/PXELINUX/lpxelinux.0 /srv/tftp/PVEXXX/lpxelinux.0 
 mkdir /srv/tftp/PVEXXX/pxelinux.cfg/

@@ -38,6 +38,7 @@ filesystem = "ext4"
 lvm.swapsize = 0 
 lvm.maxvz = 0 
 disk_list = ['sda']" > /var/www/html/PVEXXX/answer.toml
+chmod 777 /var/www/html/PVEXXX/answer.toml 
 apt install gh
 apt install git
 apt install expect

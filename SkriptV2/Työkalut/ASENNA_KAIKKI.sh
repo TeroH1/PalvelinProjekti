@@ -79,6 +79,7 @@ sudo rm -r proxmox.iso
 sudo rm -r proxmox-ve_8.3-1.iso 
 sudo rm -r initrdkansio 
 sudo rm -r auto-installer-mode.toml 
+sudo systemctl restart apt-cacher-ng.service
 sudo chmod -R 777 PalvelinProjekti
 (
   cd "PalvelinProjekti/SkriptV2/"

@@ -1,1 +1,2 @@
-Nimi,MAC-osoite,Link-ip/subnet,Link-naapuri,Konfiguroitu
+Nimi,MAC-osoite,Loopback,Link-ip/subnet,Link-naapuri,Konfiguroitu
+pve11,00:0C:29:AC:8A:D2,10.2.1.48,97/31,96,True

@@ -44,6 +44,124 @@ ff02::3 ip6-allhosts
 spawn ssh root@192.168.1.11 cat /etc/hosts | grep pve
 root@192.168.1.11's password: 
 192.168.1.11 pve11.testinstall pve11
+spawn ssh root@192.168.1.11 curl 192.168.1.1/sourceslist.txt >> /etc/apt/sources.list
+root@192.168.1.11's password: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   379  100   379    0     0  32867      0 --:--:-- --:--:-- --:--:-- 34454
+spawn ssh root@192.168.1.11 curl 192.168.1.1/01proxy.txt > /etc/apt/apt.conf.d/01proxy
+root@192.168.1.11's password: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    48  100    48    0     0   2356      0 --:--:-- --:--:-- --:--:--  2400
+spawn ssh root@192.168.1.11 apt update
+root@192.168.1.11's password: 
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Get:1 http://security.debian.org bookworm-security InRelease [48.0 kB]
+Get:2 http://ftp.at.debian.org/debian bookworm InRelease [151 kB]
+Get:3 http://http.kali.org/kali kali-rolling InRelease [41.5 kB]
+Get:4 http://ftp.at.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:5 http://download.proxmox.com/debian/pve bookworm InRelease [2,768 B]
+Get:6 http://security.debian.org bookworm-security/main amd64 Packages [240 kB]
+Get:7 http://security.debian.org bookworm-security/main Translation-en [141 kB]
+Get:8 http://security.debian.org bookworm-security/contrib amd64 Packages [644 B]
+Get:9 http://security.debian.org bookworm-security/contrib Translation-en [372 B]
+Err:10 https://enterprise.proxmox.com/debian/ceph-quincy bookworm InRelease
+  401  Unauthorized [IP: 192.168.1.1 3142]
+Get:11 http://ftp.at.debian.org/debian bookworm/main amd64 Packages [8,789 kB]
+Err:12 https://enterprise.proxmox.com/debian/pve bookworm InRelease
+  401  Unauthorized [IP: 192.168.1.1 3142]
+Get:13 http://ftp.at.debian.org/debian bookworm/main Translation-en [6,109 kB]
+Get:14 http://ftp.at.debian.org/debian bookworm/contrib amd64 Packages [54.1 kB]
+Get:15 http://ftp.at.debian.org/debian bookworm/contrib Translation-en [48.8 kB]
+Err:3 http://http.kali.org/kali kali-rolling InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY ED444FF07D8D0BF6
+Get:16 http://ftp.at.debian.org/debian bookworm-updates/main amd64 Packages [8,856 B]
+Get:17 http://ftp.at.debian.org/debian bookworm-updates/main Translation-en [8,248 B]
+Get:18 http://ftp.at.debian.org/debian bookworm-updates/contrib amd64 Packages [768 B]
+Get:19 http://ftp.at.debian.org/debian bookworm-updates/contrib Translation-en [408 B]
+Get:20 http://download.proxmox.com/debian/pve bookworm/pve-no-subscription amd64 Packages [381 kB]
+Reading package lists...
+E: Failed to fetch https://enterprise.proxmox.com/debian/ceph-quincy/dists/bookworm/InRelease  401  Unauthorized [IP: 192.168.1.1 3142]
+E: The repository 'https://enterprise.proxmox.com/debian/ceph-quincy bookworm InRelease' is not signed.
+E: Failed to fetch https://enterprise.proxmox.com/debian/pve/dists/bookworm/InRelease  401  Unauthorized [IP: 192.168.1.1 3142]
+E: The repository 'https://enterprise.proxmox.com/debian/pve bookworm InRelease' is not signed.
+W: GPG error: http://http.kali.org/kali kali-rolling InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY ED444FF07D8D0BF6
+E: The repository 'http://http.kali.org/kali kali-rolling InRelease' is not signed.
+spawn ssh root@192.168.1.11 apt install frr
+root@192.168.1.11's password: 
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  frr-pythontools libc-ares2 libyang2
+Suggested packages:
+  frr-doc
+The following NEW packages will be installed:
+  frr frr-pythontools libc-ares2 libyang2
+0 upgraded, 4 newly installed, 0 to remove and 14 not upgraded.
+Need to get 4,648 kB of archives.
+After this operation, 23.6 MB of additional disk space will be used.
+Do you want to continue? [Y/n] Y
+Get:1 http://download.proxmox.com/debian/pve bookworm/pve-no-subscription amd64 frr amd64 8.5.2-1+pve1 [4,053 kB]
+Get:2 http://ftp.at.debian.org/debian bookworm/main amd64 libc-ares2 amd64 1.18.1-3 [102 kB]
+Get:3 http://ftp.at.debian.org/debian bookworm/main amd64 libyang2 amd64 2.1.30-2 [457 kB]
+Get:4 http://download.proxmox.com/debian/pve bookworm/pve-no-subscription amd64 frr-pythontools all 8.5.2-1+pve1 [34.7 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin: 
+Fetched 4,648 kB in 0s (84.9 MB/s)
+Selecting previously unselected package libc-ares2:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 45933 files and directories currently installed.)
+Preparing to unpack .../libc-ares2_1.18.1-3_amd64.deb ...
+Unpacking libc-ares2:amd64 (1.18.1-3) ...
+Selecting previously unselected package libyang2:amd64.
+Preparing to unpack .../libyang2_2.1.30-2_amd64.deb ...
+Unpacking libyang2:amd64 (2.1.30-2) ...
+Selecting previously unselected package frr.
+Preparing to unpack .../frr_8.5.2-1+pve1_amd64.deb ...
+Unpacking frr (8.5.2-1+pve1) ...
+Selecting previously unselected package frr-pythontools.
+Preparing to unpack .../frr-pythontools_8.5.2-1+pve1_all.deb ...
+Unpacking frr-pythontools (8.5.2-1+pve1) ...
+Setting up libyang2:amd64 (2.1.30-2) ...
+Setting up libc-ares2:amd64 (1.18.1-3) ...
+Setting up frr (8.5.2-1+pve1) ...
+Adding group `frrvty' (GID 116) ...
+Done.
+Adding group `frr' (GID 117) ...
+Done.
+adduser: Warning: The home dir /nonexistent you specified can't be accessed: No such file or directory
+Adding system user `frr' (UID 109) ...
+Adding new user `frr' (UID 109) with group `frr' ...
+Not creating `/nonexistent'.
+Created symlink /etc/systemd/system/multi-user.target.wants/frr.service → /lib/systemd/system/frr.service.
+Setting up frr-pythontools (8.5.2-1+pve1) ...
+Processing triggers for man-db (2.11.2-2) ...
+Processing triggers for libc-bin (2.36-9+deb12u9) ...
+spawn ssh root@192.168.1.11 curl 192.168.1.1/frrconfigfiles/frr-pve11.conf > /etc/frr/frr.conf
+root@192.168.1.11's password: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   699  100   699    0     0    99k      0 --:--:-- --:--:-- --:--:--  113k
+spawn ssh root@192.168.1.11 curl 192.168.1.1/interfaceconfigfiles/interface-pve11.conf >> /etc/network/interfaces
+root@192.168.1.11's password: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   715  100   715    0     0  40049      0 --:--:-- --:--:-- --:--:-- 42058
+spawn ssh root@192.168.1.11 systemctl restart frr.service
+root@192.168.1.11's password: 
+spawn ssh root@192.168.1.11 systemctl restart networking.service
+root@192.168.1.11's password: 
 
 
 ###########################################################################
@@ -66,5 +184,6 @@ Hosts vaihdettiin muotoon:
 Käynnistetään palvelin uudelleen...
 spawn ssh root@192.168.1.11 reboot
 root@192.168.1.11's password: 
+Connection to 192.168.1.11 closed by remote host.
 
 Palvelin on käynnistetty uudelleen.

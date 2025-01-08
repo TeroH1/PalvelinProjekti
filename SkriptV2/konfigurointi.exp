@@ -144,10 +144,13 @@ interact
 spawn ssh $user@$server $komento9
 expect "password:"
 send "$password\r"
-expect "Do you want to continue"
-send "Y\r"
-expect "#"
-
+expect {
+    "frr is already the newest version" {
+    }
+    "Do you want to continue" {
+        send "Y\r"
+    }
+}
 
 spawn ssh $user@$server $komento10
 expect "password:"

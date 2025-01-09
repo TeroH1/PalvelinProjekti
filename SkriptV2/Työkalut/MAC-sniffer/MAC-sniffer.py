@@ -12,7 +12,7 @@ sessioMACosoitteet = {}
 if not os.path.exists("mac-osoitteet.csv"):
 	with open('mac-osoitteet.csv', mode='w', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Nimi", "MAC-osoite","Loopback","Link-ip/subnet", "Link-naapuri", "Konfiguroitu"])  
+		writer.writerow(["Nimi", "MAC-osoite", "PVEn-ip", "Loopback", "PrimaryLink-ip", "SecondaryLink-ip", "Subnet", "SrimaryLink-naapuri", "SecondaryLink-naapuri", "Konfiguroitu"])  
 		
 #laitetaan CSV-tiedostosta tiedot sanakirjaan niin saadaan käytyä läpi jos tulee samoja
 tallennettavat_tiedot = {}	
@@ -21,10 +21,13 @@ with open("mac-osoitteet.csv", mode='r', newline='') as file:
 	for row in reader:
 		laite = row['Nimi']  
 		mac_osoite = row['MAC-osoite']
+		ipaddress = row['PVEn-ip']       
 		loopback = row['Loopback']
-		linkip = row['Link-ip/subnet']
-		linknaapuri = row['Link-naapuri']
-		konfiguroitu = row['Konfiguroitu']
+		primarylinkip = row['PrimaryLink-ip']
+		secondarylinkip = row['SecondaryLink-ip']
+		subnet = row['Subnet']
+		primaryneighborip = row['PrimaryLink-naapuri']
+		secondaryneighborip = row['SecondaryLink-naapuri']
 		tallennettavat_tiedot[laite] = mac_osoite  
 
 
@@ -52,25 +55,49 @@ def discover_snifferi(packet):
 								print(f"{avain}	--- Tällä sessiolla lisätty")
 							
 						break
-					laite = input("Anna nimi laitteelle(PVExx): ")
+					
+					#NIMI
+					print("HUOM nimi täytyy olla kirjoitettu pienillä kirjaimilla (esim pvexx)")
+					laite = input("Anna nimi laitteelle: ")
 					sessioMACosoitteet[laite] = macosoite 
 					tallennettavat_tiedot.update({laite:macosoite})
-					loopback = input(f"{laite} - anna loopback osoite BGP yhteyttä varten (muodossa 10.2.1.48)=: ")
+					
+					#ipaddress
+					ipaddress = input("Anna laitteelle IP osoite, jota käytetään ssh yhteyksiin skriptin suorittamiseksi (esim 192.168.1.11): ")
+					tallennettavat_tiedot.update({laite:ipaddress})
+					
+					#LOOPBACK OSOITE
+					loopback = input(f"{laite} - anna loopback osoite BGP yhteyttä varten (muodossa 10.2.1.48): ")
 					tallennettavat_tiedot.update({laite:loopback})
 					
+					#Primary LINK-IP
 					#Huom. print
-					print("\nHUOM!!!!!!!!!\nLinkip:stä käytetään vain loppuosaa, koska redunttanttinen yhteys eli myös 2.96/31 käytetään")
-					linkip = input(f" - {laite} - anna laitteen SFP-interfacejen osoite BGP yhteyttä varten (muodossa 10.10.1.96/31): ")
-					tallennettavat_tiedot.update({laite:linkip})
+					print("\nHUOM!!!!!!!!!\n LINK IP-OSOITTEITA VAADITAAN 2!")
+					primarylinkip = input(f" - {laite} - Anna BGP yhteyttä varten Primary leafin Link-ip muodossa 10.10.1.96: ")
+					tallennettavat_tiedot.update({laite:primarylinkip})
 					
-					#Huom. print
-					print("\nHUOM!!!!!!!!!\nLinknaapurista käytetään vain loppuosaa, koska redunttanttinen yhteys eli myös 2.96 käytetään")
-					linknaapuri = input(f" - {laite} - anna BGP leaf naapurin ip osoite (muodossa 10.10.1.96):\n ")
-					tallennettavat_tiedot.update({laite:linknaapuri})
+					#SECONDARY LINK-IP
+					secondarylinkip = input(f" - {laite} - Anna BGP yhteyttä varten SECONDARY leafin Link-ip muodossa 10.10.2.96:  ")
+					tallennettavat_tiedot.update({laite:secondarylinkip})
+					
+					
+					#Subnet
+					subnet = input(f" - {laite} - anna BGP leaf naapuriverkon subnet (muodossa esim '31' ):\n ")
+					tallennettavat_tiedot.update({laite:subnet})
+					
+					#PRIMARY link-ip naapurin osoite
+					print("\nHUOM!!!!\n NAAPUREIDEN OSOITTEITA VAADITAAN 2!")
+					primaryneighborip = input(f" - {laite} - anna BGP leaf naapurin ip osoite (muodossa 10.10.1.96):\n ")
+					tallennettavat_tiedot.update({laite:primaryneighborip})
+					
+					#SECONDARY link-ip naapurin osoite
+					secondaryneighborip = input(f" - {laite} - anna BGP leaf naapurin ip osoite (muodossa 10.10.2.96):\n ")
+					tallennettavat_tiedot.update({laite:primaryneighborip})
+					
 					konfiguroitu = "False"
 					tallennettavat_tiedot.update({laite:konfiguroitu})
 					#laitetaan tiedot csv-tiedostoon
-					writer.writerow([laite, macosoite, loopback, linkip, linknaapuri,konfiguroitu])
+					writer.writerow([laite, macosoite, ipaddress,  loopback, primarylinkip, secondarylinkip, subnet, primaryneighborip, secondaryneighborip, konfiguroitu])
 		        
 					break
 

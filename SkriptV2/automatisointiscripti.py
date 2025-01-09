@@ -6,6 +6,7 @@ import os
 
 
 #Funktio threadingia varten
+#Mahdollistaa skriptin ajon jokaiselle konfiguroitavalle palvelimelle samanaikaisesti
 #Käytännössä tarkotus on että voi kutsua helposti 
 def scriptinloppu(ip_address, nimi):
 	sshlog = f"Logit/SSH_{ip_address}.txt"
@@ -14,7 +15,7 @@ def scriptinloppu(ip_address, nimi):
 	print(f"{nimi} ssh tarkistus suoritettu osoitteella {ip_address} ")
 	konflog = f"Logit/CONF_{ip_address}.txt"
 	with open(konflog, "w") as tiedosto2:
-		subprocess.run(['expect', 'konfigurointi.exp', ip_address], check=True, stdout=tiedosto2, stderr=tiedosto2)
+		subprocess.run(['expect', 'konfigurointi.exp', ip_address, nimi], check=True, stdout=tiedosto2, stderr=tiedosto2)
 	print(f"{nimi} konfigurointi suoritettu osoitteella {ip_address}")
 	time.sleep(20)
 	with open(sshlog, "w") as tiedosto:
@@ -28,26 +29,31 @@ def scriptinloppu(ip_address, nimi):
 	for row in rows:
 		if row['Nimi'] == nimi:
 			row['Konfiguroitu'] = 'True'
-			with open(output_file, mode='w', newline='') as file:  # Tää on vähän huono ratkau mutta parempaa hakies toimii
-				fieldnames = ['Nimi', 'MAC-osoite', 'Loopback', 'Link-ip/subnet', 'Link-naapuri', 'Konfiguroitu']
+			with open(input_file, mode='w', newline='') as file:  # Tää on vähän huono ratkau mutta parempaa hakies toimii
+				fieldnames = ['Nimi', 'MAC-osoite', 'PVEn-ip', 'Loopback', 'PrimaryLink-ip', 'SecondaryLink-ip', 'Subnet', 'PrimaryLink-naapuri', 'SecondaryLink-naapuri', 'Konfiguroitu']
 				writer = csv.DictWriter(file, fieldnames=fieldnames)
 				writer.writeheader() 
 				writer.writerows(rows)  
 				print(rows) # Debug printti
+				
+				
 
-def palvelinkonffit(nimi, loopback, linkip, neighborip):
+
+
+#Palvelimen FRR konfigurointitiedostot tehdään Tiedot.csv:stä saatujen tietojen pohjalta ja tallennetaan tälle laitteelle.
+def palvelinkonffit(nimi, ipaddress, loopback, primarylinkip, secondarylinkip, subnet, primaryneighborip, secondaryneighborip):
 	global interfaces_config
 	global frr_config
-	interfaces_config = f"""#/etc/network/intefaces
+	interfaces_config = f"""#/etc/network/interfaces
 auto eno1
 	iface eno1 inet static
-	address 10.10.1.{linkip}        
+	address {primarylinkip}/{subnet}        
 	mtu 9216
 	#TO_FABRIB_L2A_ETH1
 	
 auto eno2
 	iface eno2 inet static
-	address 10.10.2.{linkip}
+	address {secondarylinkip}/{subnet}    
 	mtu 9216
 	#TO_FABRIC_L2B_ETH1
 	
@@ -66,7 +72,7 @@ auto VLAB_SAN
 	
 auto vxlan7001
 	iface vxlan7001 inet manual
-	pre-up ip link add vxlan7001 type vxlan id 7001 dstport 4789 local 10.2.1.{loopback} nolearning
+	pre-up ip link add vxlan7001 type vxlan id 7001 dstport 4789 local {loopback} nolearning
 	pre-up ip link set dev vxlan7001 master VLAB_SAN
 	pre-up ip link set up dev vxlan7001
 	post-up ip link set mtu 9000 dev vxlan7001"""
@@ -86,8 +92,8 @@ bgp graceful-restart-disable
 neighbor LEAF peer-group
 neighbor LEAF remote-as 65001
 neighbor LEAF capability dynamic
-neighbor 10.10.1.{neighborip} peer-group LEAF
-neighbor 10.10.2.{neighborip} peer-group LEAF
+neighbor {primaryneighborip} peer-group LEAF
+neighbor {secondaryneighborip} peer-group LEAF
 bgp allow-martian-nexthop
 !
 address-family ipv4 unicast
@@ -109,7 +115,8 @@ end"""
 	lista.append(interfaces_config)
 
 input_file = 'Tiedot.csv'
-output_file = 'Tiedot.csv'
+
+
 
 with open(input_file, mode='r', newline='') as file:
     reader = csv.DictReader(file)
@@ -117,14 +124,18 @@ with open(input_file, mode='r', newline='') as file:
     for row in reader:
         lista = []		
         nimi = row['Nimi']
+        ipaddress = row['PVEn-ip']
         loopback = row['Loopback']
-        linkip = row['Link-ip/subnet']
-        neighborip = row['Link-naapuri']
+        primarylinkip = row['PrimaryLink-ip']
+        secondarylinkip = row['SecondaryLink-ip']
+        subnet = row['Subnet']
+        primaryneighborip = row['PrimaryLink-naapuri']
+        secondaryneighborip = row['SecondaryLink-naapuri']
         
         frrkonfigfile = f'/var/www/html/frrconfigfiles/frr-{nimi}.conf'
         interfacekonfigfile = f"/var/www/html/interfaceconfigfiles/interface-{nimi}.conf"
                
-        palvelinkonffit(nimi, loopback, linkip, neighborip)
+        palvelinkonffit(nimi, ipaddress, loopback, primarylinkip, secondarylinkip, subnet, primaryneighborip, secondaryneighborip)
         print(lista[0])
         print(lista[1])
         
@@ -136,14 +147,12 @@ with open(input_file, mode='r', newline='') as file:
         
         
 
-input_file = 'Tiedot.csv'
-output_file = 'Tiedot.csv'
+
+		
+		
+
+
 dhcp_conf_file = '/etc/dhcp/dhcpd.conf'
-
-		
-		
-
-
 static_config = """subnet 192.168.1.0 netmask 255.255.255.0 {
   range 192.168.1.100 192.168.1.150;
   option routers 192.168.1.1;
@@ -157,7 +166,6 @@ static_config = """subnet 192.168.1.0 netmask 255.255.255.0 {
 
 
 dhcp_configurations = []
-
 with open(input_file, mode='r', newline='') as file:
     reader = csv.DictReader(file)
     rows = []
@@ -166,7 +174,7 @@ with open(input_file, mode='r', newline='') as file:
         if row['Konfiguroitu'] == 'False':
             mac = row['MAC-osoite']
             ip_last_octet = nimi[-2:]
-            ip_address = f"192.168.1.{ip_last_octet}"  # Täydellinen IP-osoite
+            ip_address = row['PVEn-ip']
             print(f"{nimi} laitteen konfigurointi aloitettu")
             print(f"MAC-osoite on: {mac}")
             print(f"IP-osoite on: {ip_last_octet}")
@@ -199,7 +207,7 @@ threads = []
 for row in rows:
     if row['Konfiguroitu'] == 'False':
         ip_last_octet = row['Nimi'][-2:]
-        ip_address = f"192.168.1.{ip_last_octet}"
+        ip_address = row['PVEn-ip']
         nimi = row['Nimi']
         thread = threading.Thread(target=scriptinloppu, args=(ip_address, nimi,))
         threads.append(thread) #lisätään listaan jotta voidaan seurata millon kaikki on valmiita

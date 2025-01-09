@@ -1,25 +1,26 @@
 #!/bin/expect
 set user "root"
 set server [lindex $argv 0]
+set pve [lindex $argv 1]
 set password "123456"
 
 #muuttujat että saadaan PVE:ille numerot ip-osoitteesta
 #HUOM PVE ip-osoite pitää olla 10-99 välillä koska vain 2 numeroa lopusta otetaan huomioon
-set pituus [string length $server]
-set pvenum [string range $server [expr {$pituus - 2}] end]
+#set pituus [string length $server]
+#set pvenum [string range $server [expr {$pituus - 2}] end]
 set komento "cat /etc/hostname"
 
-if {$argc != 1} {
+if {$argc != 2} {
     puts "IP-osoite puuttuu: ./sshskripti.expect <konffattavan palvelimen ip-osoite>"
     exit 1
 }
 
 # Komento2 muuttaa hostnamen eikä tarvi uudelleen käynnistää ->> Ei toimi pitää kuitenkin käynnistää uudelleen
-set komento2 "hostnamectl set-hostname pve$pvenum" 
+set komento2 "hostnamectl set-hostname $pve" 
 
 set komento3 "cat /etc/hosts"
 # g= korvataan kaikki pve2->pve1
-set komento4 "sed -i 's/pvexxx/pve$pvenum/g' /etc/hosts"
+set komento4 "sed -i 's/pvexxx/$pve/g' /etc/hosts"
 
 # grepataan parempaan muotoon hosts
 set komento5 "cat /etc/hosts | grep pve"
@@ -32,10 +33,10 @@ set komento6 "curl 192.168.1.1/sourceslist.txt >> /etc/apt/sources.list"
 set komento7 "curl 192.168.1.1/01proxy.txt > /etc/apt/apt.conf.d/01proxy"
 
 # ajetaan frr konffit
-set komento10 "curl 192.168.1.1/frrconfigfiles/frr-pve$pvenum.conf > /etc/frr/frr.conf"
+set komento10 "curl 192.168.1.1/frrconfigfiles/frr-$pve.conf > /etc/frr/frr.conf"
 
 # Ajetaan interface konffit
-set komento11 "curl 192.168.1.1/interfaceconfigfiles/interface-pve$pvenum.conf >> /etc/network/interfaces"
+set komento11 "curl 192.168.1.1/interfaceconfigfiles/interface-$pve.conf >> /etc/network/interfaces"
 
 # Päivitetään apt 
 set komento8 "apt update"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 apt update
-apt install git
-git clone https://github.com/TeroH1/PalvelinProjekti
+#apt install git
+#git clone https://github.com/TeroH1/PalvelinProjekti
 apt install isc-dhcp-server
 nano /etc/default/isc-dhcp-server
 apt install tftp-server
@@ -80,8 +80,3 @@ sudo rm -r proxmox-ve_8.3-1.iso
 sudo rm -r initrdkansio 
 sudo rm -r auto-installer-mode.toml 
 sudo systemctl restart apt-cacher-ng.service
-sudo chmod -R 777 PalvelinProjekti
-(
-  cd "PalvelinProjekti/SkriptV2/"
-  python3 scriptKAIKKIVERSIO.py
-)

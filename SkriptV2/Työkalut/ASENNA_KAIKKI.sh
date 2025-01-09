@@ -27,18 +27,18 @@ echo 'mode = "http"
 [http] 
 url = http://192.168.1.1/PVEXXX/answer.toml' > /home/autoinstallerfiles/auto-installer-mode.toml
 echo "[global] 
-keyboard = "fi" 
-country = "at" 
-fqdn = "pvexxx.testinstall" 
-mailto = "mail@no.invalid" 
-timezone = "Europe/Vienna" 
-root_password = "123456" 
+keyboard = 'fi' 
+country = 'at' 
+fqdn = 'pvexxx.testinstall' 
+mailto = 'mail@no.invalid' 
+timezone = 'Europe/Vienna' 
+root_password = '123456' 
 
 [network] 
-source = "from-dhcp" 
+source = 'from-dhcp' 
 
 [disk-setup] 
-filesystem = "ext4" 
+filesystem = 'ext4' 
 lvm.swapsize = 0 
 lvm.maxvz = 0 
 disk_list = ['sda']" > /var/www/html/PVEXXX/answer.toml

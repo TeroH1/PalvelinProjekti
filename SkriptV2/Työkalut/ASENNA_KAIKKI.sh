@@ -46,22 +46,22 @@ chmod 777 /var/www/html/PVEXXX/answer.toml
 apt install gh
 apt install expect
 apt install apt-cacher-ng
-sudo systemctl start apt-cacher-ng
-sudo sh -c 'echo "Acquire::http::Proxy \"http://192.168.1.1:3142\";" > /etc/apt/apt.conf.d/01proxy'
+systemctl start apt-cacher-ng
+sh -c 'echo "Acquire::http::Proxy \"http://192.168.1.1:3142\";" > /etc/apt/apt.conf.d/01proxy'
 cp /etc/apt/sources.list /var/www/html/sourceslist.txt
 cp /etc/apt/apt.conf.d/01proxy /var/www/html/01proxy.txt
 apt-get install frr -y
 mkdir /var/www/html/frrconfigfiles/
 mkdir /var/www/html/interfaceconfigfiles/
 wget "https://enterprise.proxmox.com/iso/proxmox-ve_8.3-1.iso" -O "proxmox-ve_8.3-1.iso"
-sudo mkdir -p /mnt/proxmox
-sudo mount -o loop proxmox-ve_8.3-1.iso /mnt/proxmox
-sudo cp "/mnt/proxmox/boot/linux26" "/srv/tftp/PVEXXX"
-sudo cp "/mnt/proxmox/boot/initrd.img" .
-sudo umount /mnt/proxmox
-sudo rmdir /mnt/proxmox
-sudo proxmox-auto-install-assistant prepare-iso proxmox-ve_8.3-1.iso --fetch-from http --url http://192.168.1.1/PVEXXX/answer.toml
-sudo chmod 777 proxmox-ve_8.3-1-auto-from-http-url.iso
+mkdir -p /mnt/proxmox
+mount -o loop proxmox-ve_8.3-1.iso /mnt/proxmox
+cp "/mnt/proxmox/boot/linux26" "/srv/tftp/PVEXXX"
+cp "/mnt/proxmox/boot/initrd.img" .
+umount /mnt/proxmox
+rmdir /mnt/proxmox
+proxmox-auto-install-assistant prepare-iso proxmox-ve_8.3-1.iso --fetch-from http --url http://192.168.1.1/PVEXXX/answer.toml
+chmod 777 proxmox-ve_8.3-1-auto-from-http-url.iso
 zstd -d initrd.img -o initrdkansio
 cpio -idmv -D uusini < initrdkansio
 mv "proxmox-ve_8.3-1-auto-from-http-url.iso"  "proxmox.iso"
@@ -71,11 +71,11 @@ cp "proxmox.iso" "uusini/"
   find . | cpio -H newc -o > ../initrduusi
 )
 gzip -9 -S ".img" initrduusi
-sudo mv initrduusi.img "/var/www/html/PVEXXX/initrd.img"
-sudo rm -r uusini
-sudo rm -r initrd.img
-sudo rm -r proxmox.iso
-sudo rm -r proxmox-ve_8.3-1.iso 
-sudo rm -r initrdkansio 
-sudo rm -r auto-installer-mode.toml 
-sudo systemctl restart apt-cacher-ng.service
+mv initrduusi.img "/var/www/html/PVEXXX/initrd.img"
+rm -r uusini
+rm -r initrd.img
+rm -r proxmox.iso
+rm -r proxmox-ve_8.3-1.iso 
+rm -r initrdkansio 
+rm -r auto-installer-mode.toml 
+systemctl restart apt-cacher-ng.service

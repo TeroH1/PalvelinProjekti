@@ -47,9 +47,8 @@ apt install gh
 apt install expect
 apt install apt-cacher-ng
 systemctl start apt-cacher-ng
-sh -c 'echo "Acquire::http::Proxy \"http://192.168.1.1:3142\";" > /etc/apt/apt.conf.d/01proxy'
+sh -c 'echo "Acquire::http::Proxy \"http://192.168.1.1:3142\";" > /var/www/html/01proxy.txt'
 cp /etc/apt/sources.list /var/www/html/sourceslist.txt
-cp /etc/apt/apt.conf.d/01proxy /var/www/html/01proxy.txt
 apt-get install frr -y
 mkdir /var/www/html/frrconfigfiles/
 mkdir /var/www/html/interfaceconfigfiles/

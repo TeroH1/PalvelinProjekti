@@ -22,7 +22,6 @@ mkdir /var/www/html/PVEXXX
 mkdir /home/autoinstallerfiles
 systemctl restart apache2
 echo 'deb [trusted=yes] http://download.proxmox.com/debian/pve bookworm pve-no-subscription' >> /etc/apt/sources.list
-apt update
 apt install proxmox-auto-install-assistant
 echo 'mode = "http" 
 [http] 

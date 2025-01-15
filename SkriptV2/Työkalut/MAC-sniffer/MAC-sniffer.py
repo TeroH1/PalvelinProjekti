@@ -73,11 +73,11 @@ def discover_snifferi(packet):
 					#Primary LINK-IP
 					#Huom. print
 					print("\nHUOM!!!!!!!!!\n LINK IP-OSOITTEITA VAADITAAN 2!")
-					primarylinkip = input(f" - {laite} - Anna BGP yhteyttä varten Primary leafin Link-ip muodossa 10.10.1.96: ")
+					primarylinkip = input(f" - {laite} - Anna BGP yhteyttä varten oma Primary leaf Link-ip muodossa 10.10.1.97: ")
 					tallennettavat_tiedot.update({laite:primarylinkip})
 					
 					#SECONDARY LINK-IP
-					secondarylinkip = input(f" - {laite} - Anna BGP yhteyttä varten SECONDARY leafin Link-ip muodossa 10.10.2.96:  ")
+					secondarylinkip = input(f" - {laite} - Anna BGP yhteyttä varten oma SECONDARY leaf Link-ip muodossa 10.10.2.97:  ")
 					tallennettavat_tiedot.update({laite:secondarylinkip})
 					
 					
@@ -93,11 +93,13 @@ def discover_snifferi(packet):
 					#SECONDARY link-ip naapurin osoite
 					secondaryneighborip = input(f" - {laite} - anna BGP leaf naapurin ip osoite (muodossa 10.10.2.96):\n ")
 					tallennettavat_tiedot.update({laite:primaryneighborip})
+				
 					
 					konfiguroitu = "False"
 					tallennettavat_tiedot.update({laite:konfiguroitu})
 					#laitetaan tiedot csv-tiedostoon
 					writer.writerow([laite, macosoite, ipaddress,  loopback, primarylinkip, secondarylinkip, subnet, primaryneighborip, secondaryneighborip, konfiguroitu])
+					print(f"\n!\nTiedot vastaanotettu, Kuunnellaan seuraavaa DHCP-pakettia\n!\n")
 		        
 					break
 

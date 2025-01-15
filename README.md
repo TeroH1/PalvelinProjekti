@@ -9,7 +9,9 @@ Skriptin suorittaessa eri palvelimien expect-skriptien tulosteet ohjautuvat Logi
 
 
 Automaattisen asennuksen kulkukaavio esitetään alla olevassa kuvassa. Lähtökohta kuvan alkutilanteeseen on se, että tarvittavat asennukset on tehty virtuaalikoneelle ASENNA_KAIKKI.sh skriptin mukaisesti.
-![kuva](https://github.com/user-attachments/assets/7fd59a61-4f71-4efb-b2ca-fc71332853c3)
+
+![kuva](https://github.com/user-attachments/assets/fddacd57-747c-4083-a944-1f378f9338c7)
+
 
 
 Example of use:

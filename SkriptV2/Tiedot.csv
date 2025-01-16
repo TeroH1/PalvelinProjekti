@@ -1,2 +1,2 @@
 Nimi,MAC-osoite,PVEn-ip,Loopback,PrimaryLink-ip,SecondaryLink-ip,Subnet,PrimaryLink-naapuri,SecondaryLink-naapuri,Konfiguroitu
-pve11,00:0c:29:80:69:7e,192.168.1.11,10.2.1.48,10.10.1.96,10.10.2.96,31,10.10.1.96,10.10.2.96,True
+pve11,00:0c:29:80:69:7e,192.168.1.11,10.2.1.48,10.10.1.96,10.10.2.96,31,10.10.1.97,10.10.2.97,True

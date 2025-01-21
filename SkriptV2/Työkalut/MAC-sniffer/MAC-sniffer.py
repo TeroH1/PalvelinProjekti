@@ -12,7 +12,7 @@ sessioMACosoitteet = {}
 if not os.path.exists("mac-osoitteet.csv"):
 	with open('mac-osoitteet.csv', mode='w', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Nimi", "MAC-osoite", "PVEn-ip", "Loopback", "PrimaryLink-ip", "SecondaryLink-ip", "Subnet", "SrimaryLink-naapuri", "SecondaryLink-naapuri", "Konfiguroitu"])  
+		writer.writerow(["Nimi", "MAC-osoite", "PVEn-ip", "Loopback", "PrimaryLink-ip", "SecondaryLink-ip", "Subnet", "PrimaryLink-naapuri", "SecondaryLink-naapuri", "Konfiguroitu"])  
 		
 #laitetaan CSV-tiedostosta tiedot sanakirjaan niin saadaan käytyä läpi jos tulee samoja
 tallennettavat_tiedot = {}	

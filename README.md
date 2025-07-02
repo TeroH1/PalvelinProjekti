@@ -1,5 +1,5 @@
 🚀🚀Proxmox palvelimen automatisoinnin skriptitiedostot🚀🚀
-🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸🐸
+
 
 Projektin tavoite on automatisoida Proxmox palvelimen asennus ja konfigurointi käyttäen apuna etenkin PXE:tä ja expect-ohjelmaa.
 Skripti on tuotettu spesifisesti juuri projektin kohteena olevaan ympäristöön, mutta on helposti mukautettavissa mihin tahansa Proxmox ympäristöön. 
